@@ -405,6 +405,54 @@
                 showNotification('MetaMask Tidak Ditemukan', 'Silakan instal ekstensi MetaMask untuk melanjutkan.', 'warning');
             }
         });
+        function saveWalletToLocalStorage(address) {
+    localStorage.setItem('walletAddress', address);
+}
+
+// Memuat data dari localStorage jika tersedia
+async function loadWalletFromStorage() {
+    const savedAddress = localStorage.getItem('walletAddress');
+    if (savedAddress) {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const balance = await provider.getBalance(savedAddress);
+        const ethBalance = ethers.utils.formatEther(balance);
+
+        const formattedAddress = `${savedAddress.substring(0, 6)}...${savedAddress.substring(savedAddress.length - 4)}`;
+        walletAddress.textContent = formattedAddress;
+        walletAddress.title = savedAddress;
+        walletInfo.classList.add('connected');
+        connectButton.disabled = true;
+        connectButton.textContent = "Wallet Connected";
+        networkInfo.textContent = `Jaringan: (tidak tersedia - reload koneksi)`;
+        balanceInfo.textContent = `Saldo: ${parseFloat(ethBalance).toFixed(4)} ETH`;
+
+        showNotification('Info Dipulihkan', 'Data wallet Anda dimuat dari penyimpanan.', 'success');
+    }
+}
+
+// Pantau perubahan akun & jaringan
+if (window.ethereum) {
+    window.ethereum.on('accountsChanged', () => {
+        location.reload();
+    });
+
+    window.ethereum.on('chainChanged', () => {
+        location.reload();
+    });
+}
+
+// Panggil saat halaman dimuat
+window.addEventListener('load', () => {
+    if (!isMetaMaskInstalled()) {
+        connectButton.textContent = "Instal MetaMask";
+        connectButton.onclick = () => {
+            window.open('https://metamask.io/', '_blank');
+        };
+        showNotification('MetaMask Tidak Ditemukan', 'Silakan instal ekstensi MetaMask untuk melanjutkan.', 'warning');
+    } else {
+        loadWalletFromStorage(); // muat dari localStorage
+    }
+});
     </script>
 </body>
 </html>
