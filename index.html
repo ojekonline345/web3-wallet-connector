@@ -397,16 +397,7 @@
         connectButton.addEventListener('click', connectWallet);
         disconnectButton.addEventListener('click', disconnectWallet);
         
-        // Periksa status koneksi saat halaman dimuat
-        window.addEventListener('load', () => {
-            if (!isMetaMaskInstalled()) {
-                connectButton.textContent = "Instal MetaMask";
-                connectButton.onclick = () => {
-                    window.open('https://metamask.io/', '_blank');
-                };
-                showNotification('MetaMask Tidak Ditemukan', 'Silakan instal ekstensi MetaMask untuk melanjutkan.', 'warning');
-            }
-        });
+      
         function saveWalletToLocalStorage(address) {
     localStorage.setItem('walletAddress', address);
 }
